@@ -100,4 +100,8 @@ public class Utils {
         return embeddings;
     }
 
+    public static boolean isPointInRect(Rect rect, float x, float y) {
+        return x > rect.left && x < rect.right &&
+                y > rect.top && y < rect.bottom;
+    }
 }

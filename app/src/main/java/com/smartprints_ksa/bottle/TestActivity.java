@@ -1,10 +1,12 @@
 package com.smartprints_ksa.bottle;
 
+import static com.smartprints_ksa.bottle.Utils.isPointInRect;
 import static com.smartprints_ksa.bottle.Utils.rescaleBBox;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -25,8 +27,14 @@ import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +55,8 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -75,7 +85,9 @@ public class TestActivity extends AppCompatActivity
     private PorterDuffXfermode mPorterDuffXfermodeSRC;
     private ImageView mTrackResultView;
     private Thread inferenceThread;
+    private ArrayList<Snapshot> snapshots = new ArrayList<Snapshot>();
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +115,22 @@ public class TestActivity extends AppCompatActivity
         galleryBtn = this.findViewById(R.id.button);
         cameraBtn = this.findViewById(R.id.button2);
         timeView = this.findViewById(R.id.time);
+
+        mImageView.setOnTouchListener((v, event) -> {
+            if (event.getAction() != MotionEvent.ACTION_DOWN) {
+                return true;
+            }
+
+            float touchX = event.getX();
+            float touchY = event.getY();
+
+            Snapshot touchedSnapshot = findTouchedSnapshot(touchX, touchY);
+            if (touchedSnapshot != null) {
+                showClassPickerDialog(touchedSnapshot);
+            }
+
+            return true;
+        });
 
         backBtn.setOnClickListener(v -> {
             Intent i = new Intent(getApplicationContext(),MainActivity.class);
@@ -159,6 +187,54 @@ public class TestActivity extends AppCompatActivity
             }
         });
     }
+
+    private Snapshot findTouchedSnapshot(float x, float y) {
+        return snapshots.stream()
+                .filter(snapshot -> isPointInRect(snapshot.getRect(), x, y))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private void showClassPickerDialog(Snapshot currentSnapshot) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_layout, null);
+        builder.setView(dialogView);
+
+        Spinner classDropdown = dialogView.findViewById(R.id.classDropdown);
+
+        // Sample class names (replace with your actual class names)
+        String[] classNames = new String[]{ObjectType.BOTTLE.name(), ObjectType.CAN.name(), ObjectType.UNKNOWN.name()};
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_dropdown_item,
+                classNames);
+        classDropdown.setAdapter(adapter);
+        classDropdown.setSelection(Arrays.asList(classNames).indexOf(currentSnapshot.getObjectType().name()));
+
+
+        builder.setPositiveButton("Save", (dialog, which) -> {
+            String selectedClass = classDropdown.getSelectedItem().toString();
+
+            if (!selectedClass.isEmpty()) {
+                currentSnapshot.setObjectType(ObjectType.valueOf(selectedClass));
+                RVMDetector.addEmbeddings(currentSnapshot.getObjectType(), Collections.singletonList(currentSnapshot.getEmbedding()));
+                drawBboxes(snapshots);
+            } else {
+                Toast.makeText(this, "Please select a class", Toast.LENGTH_SHORT).show();
+                showClassPickerDialog(currentSnapshot); // Re-show the dialog if no selection
+            }
+
+            dialog.dismiss();
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
     private void checkPermissions() {
         if (checkSelfPermission(permissions[0]) != PackageManager.PERMISSION_GRANTED ||
                 checkSelfPermission(permissions[1]) != PackageManager.PERMISSION_GRANTED ||
@@ -226,10 +302,12 @@ public class TestActivity extends AppCompatActivity
         return Bitmap.createBitmap(input, 0, 0, input.getWidth(), input.getHeight(), rotationMatrix, true);
     }
 
+
+
     @Override
     public void run() {
         if (!permitted) return;
-        ArrayList<Snapshot>  batteryObjects = RVMDetector.detectAll(mBitmap);
+        ArrayList<Snapshot> batteryObjects = RVMDetector.detectAll(mBitmap);
 
         runOnUiThread(() -> {
             clearCanvas();
@@ -242,22 +320,14 @@ public class TestActivity extends AppCompatActivity
 
 
             for (Snapshot batteryObject : batteryObjects) {
-                Rect detection = rescaleBBox(batteryObject.getRect(), mStartX, mStartY, mIvScaleX, mIvScaleY);
+                batteryObject.setRect(rescaleBBox(batteryObject.getRect(), mStartX, mStartY, mIvScaleX, mIvScaleY));
 
-                System.out.println(detection.top + " " + detection.bottom + " " + detection.left
-                        + " " + detection.right);
-                if (batteryObject.getObjectType() == ObjectType.UNKNOWN){
-                    mTrackBboxPaint.setColor(Color.RED);
-                    mTrackTextPaint.setColor(Color.RED);
-                } else {
-                    mTrackTextPaint.setColor(Color.GREEN);
-                    mTrackBboxPaint.setColor(Color.GREEN);
-                }
-                mTrackResultCanvas.drawText(batteryObject.getObjectType().name(), detection.left, detection.top - 10, mTrackTextPaint);
-                mTrackResultCanvas.drawRect(detection, mTrackBboxPaint);
+                System.out.println(batteryObject.getRect().top + " " + batteryObject.getRect().bottom + " " + batteryObject.getRect().left
+                        + " " + batteryObject.getRect().right);
                 total_time += (int) (batteryObject.getDetectionDuration() / 1_000_000.0);
-
             }
+            snapshots = batteryObjects;
+            drawBboxes(snapshots);
 
             timeView.setText(String.format("%d ms", total_time));
             mButtonDetect.setEnabled(true);
@@ -269,6 +339,24 @@ public class TestActivity extends AppCompatActivity
             mTrackResultView.setImageBitmap(mTrackResultBitmap);
 
         });
+    }
+    void drawBboxes(ArrayList<Snapshot> snapshots) {
+        if (mTrackResultCanvas != null) {
+            mTrackBboxPaint.setXfermode(mPorterDuffXfermodeClear);
+            mTrackResultCanvas.drawPaint(mTrackBboxPaint);
+            mTrackBboxPaint.setXfermode(mPorterDuffXfermodeSRC);
+        }
+        for (Snapshot batteryObject : snapshots) {
+            if (batteryObject.getObjectType() == ObjectType.UNKNOWN) {
+                mTrackBboxPaint.setColor(Color.RED);
+                mTrackTextPaint.setColor(Color.RED);
+            } else {
+                mTrackTextPaint.setColor(Color.GREEN);
+                mTrackBboxPaint.setColor(Color.GREEN);
+            }
+            mTrackResultCanvas.drawText(batteryObject.getObjectType().name(), batteryObject.getRect().left, batteryObject.getRect().top - 10, mTrackTextPaint);
+            mTrackResultCanvas.drawRect(batteryObject.getRect(), mTrackBboxPaint);
+        }
     }
 
     ActivityResultLauncher<Intent> galleryActivityResultLauncher = registerForActivityResult(
@@ -323,6 +411,7 @@ public class TestActivity extends AppCompatActivity
     private void clearCanvas() {
         timeView.setText("");
 //        recycleBitmaps();
+        snapshots = new ArrayList<Snapshot>();
         if (mTrackResultCanvas != null) {
             mTrackBboxPaint.setXfermode(mPorterDuffXfermodeClear);
             mTrackResultCanvas.drawPaint(mTrackBboxPaint);

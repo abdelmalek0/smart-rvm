@@ -117,22 +117,7 @@ public class RVMDetector {
 	        System.out.println("1. Execution time: " + duration / 1_000_000.0 + " ms");
             System.out.println("2. Execution time: " + BottleDetector.getPipelineExecutionTime() / 1_000_000.0 + " ms");
             currentSnapshot.setDetectionDuration(BottleDetector.getPipelineExecutionTime() + duration);
-            currentSnapshot.setObjectType(results.get(0).getValue() > 1.50 ? ObjectType.UNKNOWN : results.get(0).getKey());
-//            switch (Utils.argmax(currentSnapshot.getScore())){
-//                case 0:
-//                    currentSnapshot.setObjectType(ObjectType.BOTTLE);
-//                    break;
-//                case 1:
-//                    currentSnapshot.setObjectType(ObjectType.CAN);
-//                    break;
-//                case 2:
-//                    currentSnapshot.setObjectType(ObjectType.NOT_VALID);
-//                    break;
-//                default:
-//                    currentSnapshot.setObjectType(ObjectType.UNKNOWN);
-//                    break;
-//            }
-
+            currentSnapshot.setObjectType(results.get(0).getValue() > 1.0 ? ObjectType.UNKNOWN : results.get(0).getKey());
             return currentSnapshot;
         }
         return null;

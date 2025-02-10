@@ -134,7 +134,6 @@ public class BottleDetector {
             float[] embedding = mInferenceWrapper.runClassifier(Processor.convertBitmapToByteArray(bm));
             embedding = l2Normalize(embedding);
             System.out.println("prediction: " + Arrays.toString(embedding));
-//            recognition.setScore(predictions);
             recognition.setEmbedding(embedding);
         }
 
