@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bottle Detector Demo</string>
+    <string name="app_title">Bottle Detector Demo</string>
+    <string name="powered_by_rockchip">Powered by SmartPrints</string>
+    <string name="title_activity_start">Bottle Detector Demo</string>
+    <string name="buttonCamera">Camera Demo</string>
+    <string name="buttonImage">Image Demo</string>
+    <string name="run_model">wait ...</string>
+    <string name="detect">detect</string>
+    <string name="type">Accepted</string>
+    <string name="time">Inference Time</string>
+    <string name="verification_code">Validation code</string>
+    <string name="requestcode">Request code</string>
+    <string name="invalid_code">Verification Code Error: We couldn\'t verify your validation code. Make sure you\'ve entered the code correctly and attempt verification again.</string>
+    <string name="valid_code">Success! The entered code has been verified and accepted. Your account is now active.</string>
+    <string name="rvm_error">RVM Error: We couldn\'t open the RVM and set it up.</string>
+    <string name="rvm_init">Success! The RVM doors are open now</string>
+    <string name="access">Please activate the app first</string>
+    <string name="wait">Please wait until the operation is finished</string>
+    <string name="add_bottle">Please introduce your bottle/can</string>
+    <string name="zones">Detection zones</string>
+    <string name="confirmationTime">Time to Confirmation</string>
+    <string name="settings">Settings</string>
+    <string name="save">save</string>
+</resources>

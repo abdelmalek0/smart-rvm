@@ -1,0 +1,30 @@
+{
+  "buildFiles": [
+    "/media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/home/smartprints/Android/Sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/.cxx/RelWithDebInfo/1j3v4l3t/armeabi-v7a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/home/smartprints/Android/Sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/.cxx/RelWithDebInfo/1j3v4l3t/armeabi-v7a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "rknn4j::@6890427a1f51a3e7e1df": {
+      "artifactName": "rknn4j",
+      "abi": "armeabi-v7a",
+      "output": "/media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/build/intermediates/cxx/RelWithDebInfo/1j3v4l3t/obj/armeabi-v7a/librknn4j.so",
+      "runtimeFiles": [
+        "/media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/src/main/jniLibs/armeabi-v7a/librknnrt.so",
+        "/media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/src/main/jniLibs/armeabi-v7a/librga.so"
+      ]
+    }
+  }
+}

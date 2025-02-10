@@ -1,0 +1,22 @@
+[
+{
+  "directory": "D:/Datasets/RVM/RVM_DEMO/RVMDetector/.cxx/Debug/1u2m5h4z/armeabi-v7a",
+  "command": "C:\\Users\\MST\\AppData\\Local\\Android\\Sdk\\ndk\\21.1.6352462\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=armv7-none-linux-androideabi24 --gcc-toolchain=C:/Users/MST/AppData/Local/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=C:/Users/MST/AppData/Local/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Drknn4j_EXPORTS -ID:/Datasets/RVM/RVM_DEMO/RVMDetector/src/main/cpp/rga -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -march=armv7-a -mthumb -Wformat -Werror=format-security  -std=c++11 -fexceptions -O0 -fno-limit-debug-info  -fPIC -o CMakeFiles\\rknn4j.dir\\src\\main\\cpp\\native-lib.cc.o -c D:\\Datasets\\RVM\\RVM_DEMO\\RVMDetector\\src\\main\\cpp\\native-lib.cc",
+  "file": "D:\\Datasets\\RVM\\RVM_DEMO\\RVMDetector\\src\\main\\cpp\\native-lib.cc"
+},
+{
+  "directory": "D:/Datasets/RVM/RVM_DEMO/RVMDetector/.cxx/Debug/1u2m5h4z/armeabi-v7a",
+  "command": "C:\\Users\\MST\\AppData\\Local\\Android\\Sdk\\ndk\\21.1.6352462\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=armv7-none-linux-androideabi24 --gcc-toolchain=C:/Users/MST/AppData/Local/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=C:/Users/MST/AppData/Local/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Drknn4j_EXPORTS -ID:/Datasets/RVM/RVM_DEMO/RVMDetector/src/main/cpp/rga -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -march=armv7-a -mthumb -Wformat -Werror=format-security  -std=c++11 -fexceptions -O0 -fno-limit-debug-info  -fPIC -o CMakeFiles\\rknn4j.dir\\src\\main\\cpp\\post_process.cc.o -c D:\\Datasets\\RVM\\RVM_DEMO\\RVMDetector\\src\\main\\cpp\\post_process.cc",
+  "file": "D:\\Datasets\\RVM\\RVM_DEMO\\RVMDetector\\src\\main\\cpp\\post_process.cc"
+},
+{
+  "directory": "D:/Datasets/RVM/RVM_DEMO/RVMDetector/.cxx/Debug/1u2m5h4z/armeabi-v7a",
+  "command": "C:\\Users\\MST\\AppData\\Local\\Android\\Sdk\\ndk\\21.1.6352462\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=armv7-none-linux-androideabi24 --gcc-toolchain=C:/Users/MST/AppData/Local/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=C:/Users/MST/AppData/Local/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Drknn4j_EXPORTS -ID:/Datasets/RVM/RVM_DEMO/RVMDetector/src/main/cpp/rga -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -march=armv7-a -mthumb -Wformat -Werror=format-security  -std=c++11 -fexceptions -O0 -fno-limit-debug-info  -fPIC -o CMakeFiles\\rknn4j.dir\\src\\main\\cpp\\yolo_image.cc.o -c D:\\Datasets\\RVM\\RVM_DEMO\\RVMDetector\\src\\main\\cpp\\yolo_image.cc",
+  "file": "D:\\Datasets\\RVM\\RVM_DEMO\\RVMDetector\\src\\main\\cpp\\yolo_image.cc"
+},
+{
+  "directory": "D:/Datasets/RVM/RVM_DEMO/RVMDetector/.cxx/Debug/1u2m5h4z/armeabi-v7a",
+  "command": "C:\\Users\\MST\\AppData\\Local\\Android\\Sdk\\ndk\\21.1.6352462\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=armv7-none-linux-androideabi24 --gcc-toolchain=C:/Users/MST/AppData/Local/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=C:/Users/MST/AppData/Local/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Drknn4j_EXPORTS -ID:/Datasets/RVM/RVM_DEMO/RVMDetector/src/main/cpp/rga -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -march=armv7-a -mthumb -Wformat -Werror=format-security  -std=c++11 -fexceptions -O0 -fno-limit-debug-info  -fPIC -o CMakeFiles\\rknn4j.dir\\src\\main\\cpp\\classifier.cc.o -c D:\\Datasets\\RVM\\RVM_DEMO\\RVMDetector\\src\\main\\cpp\\classifier.cc",
+  "file": "D:\\Datasets\\RVM\\RVM_DEMO\\RVMDetector\\src\\main\\cpp\\classifier.cc"
+}
+]

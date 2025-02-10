@@ -1,0 +1,42 @@
+{
+  "buildFiles": [
+    "D:\\Datasets\\RVM\\RVM_DEMO\\RVMDetector\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "C:\\Users\\MST\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "-C",
+      "D:\\Datasets\\RVM\\RVM_DEMO\\RVMDetector\\.cxx\\Debug\\1u2m5h4z\\armeabi-v7a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "C:\\Users\\MST\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-C",
+    "D:\\Datasets\\RVM\\RVM_DEMO\\RVMDetector\\.cxx\\Debug\\1u2m5h4z\\armeabi-v7a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "rknn4j::@6890427a1f51a3e7e1df": {
+      "toolchain": "toolchain",
+      "abi": "armeabi-v7a",
+      "artifactName": "rknn4j",
+      "output": "D:\\Datasets\\RVM\\RVM_DEMO\\RVMDetector\\build\\intermediates\\cxx\\Debug\\1u2m5h4z\\obj\\armeabi-v7a\\librknn4j.so",
+      "runtimeFiles": [
+        "D:\\Datasets\\RVM\\RVM_DEMO\\RVMDetector\\src\\main\\jniLibs\\armeabi-v7a\\librknnrt.so",
+        "D:\\Datasets\\RVM\\RVM_DEMO\\RVMDetector\\src\\main\\jniLibs\\armeabi-v7a\\librga.so",
+        "C:\\Users\\MST\\AppData\\Local\\Android\\Sdk\\ndk\\21.1.6352462\\toolchains\\llvm\\prebuilt\\windows-x86_64\\sysroot\\usr\\lib\\arm-linux-androideabi\\24\\liblog.so"
+      ]
+    }
+  },
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "C:\\Users\\MST\\AppData\\Local\\Android\\Sdk\\ndk\\21.1.6352462\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang.exe",
+      "cppCompilerExecutable": "C:\\Users\\MST\\AppData\\Local\\Android\\Sdk\\ndk\\21.1.6352462\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cc"
+  ]
+}

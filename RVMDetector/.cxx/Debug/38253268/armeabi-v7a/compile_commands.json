@@ -1,0 +1,22 @@
+[
+{
+  "directory": "/media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/.cxx/Debug/38253268/armeabi-v7a",
+  "command": "/home/smartprints/Android/Sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ --target=armv7-none-linux-androideabi24 --sysroot=/home/smartprints/Android/Sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/linux-x86_64/sysroot -Drknn4j_EXPORTS -I/media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/src/main/cpp/rga -std=c++11 -fexceptions -g  -fno-limit-debug-info -fPIC -o CMakeFiles/rknn4j.dir/src/main/cpp/native-lib.cc.o -c /media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/src/main/cpp/native-lib.cc",
+  "file": "/media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/src/main/cpp/native-lib.cc"
+},
+{
+  "directory": "/media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/.cxx/Debug/38253268/armeabi-v7a",
+  "command": "/home/smartprints/Android/Sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ --target=armv7-none-linux-androideabi24 --sysroot=/home/smartprints/Android/Sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/linux-x86_64/sysroot -Drknn4j_EXPORTS -I/media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/src/main/cpp/rga -std=c++11 -fexceptions -g  -fno-limit-debug-info -fPIC -o CMakeFiles/rknn4j.dir/src/main/cpp/post_process.cc.o -c /media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/src/main/cpp/post_process.cc",
+  "file": "/media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/src/main/cpp/post_process.cc"
+},
+{
+  "directory": "/media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/.cxx/Debug/38253268/armeabi-v7a",
+  "command": "/home/smartprints/Android/Sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ --target=armv7-none-linux-androideabi24 --sysroot=/home/smartprints/Android/Sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/linux-x86_64/sysroot -Drknn4j_EXPORTS -I/media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/src/main/cpp/rga -std=c++11 -fexceptions -g  -fno-limit-debug-info -fPIC -o CMakeFiles/rknn4j.dir/src/main/cpp/yolo_image.cc.o -c /media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/src/main/cpp/yolo_image.cc",
+  "file": "/media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/src/main/cpp/yolo_image.cc"
+},
+{
+  "directory": "/media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/.cxx/Debug/38253268/armeabi-v7a",
+  "command": "/home/smartprints/Android/Sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ --target=armv7-none-linux-androideabi24 --sysroot=/home/smartprints/Android/Sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/linux-x86_64/sysroot -Drknn4j_EXPORTS -I/media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/src/main/cpp/rga -std=c++11 -fexceptions -g  -fno-limit-debug-info -fPIC -o CMakeFiles/rknn4j.dir/src/main/cpp/classifier.cc.o -c /media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/src/main/cpp/classifier.cc",
+  "file": "/media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/src/main/cpp/classifier.cc"
+}
+]

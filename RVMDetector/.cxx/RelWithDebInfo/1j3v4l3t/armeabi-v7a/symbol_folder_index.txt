@@ -1,0 +1,1 @@
+/media/smartprints/FECC05F4CC05A84B/ubuntu22/Smartprints/rvm-demo/RVMDetector/build/intermediates/cxx/RelWithDebInfo/1j3v4l3t/obj/armeabi-v7a
