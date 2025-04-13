@@ -2,6 +2,7 @@ package com.smartprints_ksa.battery_detector;
 
 import static com.smartprints_ksa.battery_detector.BottleDetector.nClassifierOutput;
 
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
@@ -27,6 +28,7 @@ public class DetectedObject {
     /** Optional location within the source image for the location of the recognized object. */
     private RectF location;
     private Rect rect;
+    private Bitmap objectBitmap;
 
     public DetectedObject(
             final int id, final Float detectionConfidence, final RectF location) {
@@ -73,6 +75,14 @@ public class DetectedObject {
     public String toString(){
         return String.format(Locale.getDefault(), "ID %d: RECT(L,R,T,B): (%d,%d,%d,%d)", getId(),
                 this.rect.left, this.rect.right, this.rect.top, this.rect.bottom);
+    }
+
+    public Bitmap getObjectBitmap() {
+        return objectBitmap;
+    }
+
+    public void setObjectBitmap(Bitmap bitmap) {
+        this.objectBitmap = bitmap;
     }
 }
 

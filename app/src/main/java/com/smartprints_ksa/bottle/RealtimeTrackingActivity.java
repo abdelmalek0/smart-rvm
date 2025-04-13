@@ -24,7 +24,6 @@ import android.hardware.camera2.CaptureRequest;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.util.Log;
 import android.util.Pair;
 import android.util.Range;
 import android.view.Gravity;
@@ -46,6 +45,7 @@ import com.leesche.yyyiotlib.entity.UnitEntity;
 import com.leesche.yyyiotlib.serial.callback.ControlCallBack;
 import com.leesche.yyyiotlib.serial.manager.Cmd2Constants;
 import com.leesche.yyyiotlib.serial.manager.RvmHelper;
+import com.smartprints_ksa.battery_detector.LogToFile;
 import com.smartprints_ksa.battery_detector.RVMDetector;
 import com.smartprints_ksa.battery_detector.data_structure.enums.Phase;
 import com.smartprints_ksa.battery_detector.data_structure.Snapshot;
@@ -519,7 +519,7 @@ public class RealtimeTrackingActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Log.d("yolo", "onRequestPermissionsResult:" + requestCode);
+        LogToFile.log("yolo", "onRequestPermissionsResult:" + requestCode);
         if (requestCode == 321) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 Toast toast = Toast.makeText(this, "Please turn on the permission " +

@@ -41,7 +41,7 @@ public class BottleDetector {
     private static String tmFormat = "yyyyMMddHHmmss";
 
     public static  int OBJ_NUMB_MAX_SIZE = 64;
-    public static int nClassifierOutput = 256;
+    public static int nClassifierOutput = 128;
     protected static float confidenceThreshold = 0.1f;
     protected static float classThreshold = 0.5f;
     protected static float nmsThreshold = 0.5f;
@@ -59,6 +59,7 @@ public class BottleDetector {
 
     private static InferenceResult mInferenceResult = new InferenceResult();  // detection result
     public static String getRequestCode(Context context){
+
         SimpleDateFormat dateFormat = new SimpleDateFormat(tmFormat);
         String currentDateTime = dateFormat.format(new Date());
         if (!trimmed) {pw = trim(pw,d); em = trim(em, lai); trimmed = true;}
@@ -88,7 +89,7 @@ public class BottleDetector {
         validated = validateActivationCode(validationCode);
         if (! validated) return false;
         String platform = getPlatform();
-        Log.d("setup", "get soc platform:" + platform);
+        LogToFile.log("setup", "get soc platform:" + platform);
 
         if (!platform.equals("rk3588")) {
             return false;
@@ -98,12 +99,14 @@ public class BottleDetector {
             mInferenceResult.init();
         } catch (IOException e) {
             e.printStackTrace();
+            LogToFile.log("setup", e.getMessage());
         }
         mInferenceWrapper = new InferenceWrapper();
         initializeObjectDetectionModel(context, mYoloModelName);
         initializeClassificationModel(context, mClassifierModelName);
         return validated;
     }
+
     public static ArrayList<DetectedObject> recognize(Bitmap mBitmap){
         long startTime = System.nanoTime();
         float mImgScaleX = (float)mBitmap.getWidth() / Processor.YOLO_INPUT;
@@ -134,7 +137,9 @@ public class BottleDetector {
             float[] embedding = mInferenceWrapper.runClassifier(Processor.convertBitmapToByteArray(bm));
             embedding = l2Normalize(embedding);
             System.out.println("prediction: " + Arrays.toString(embedding));
+            recognition.setObjectBitmap(Bitmap.createBitmap(bm));
             recognition.setEmbedding(embedding);
+
         }
 
         classificationTime = System.nanoTime() - startTime;
@@ -192,7 +197,7 @@ public class BottleDetector {
 
             File file = new File(filePath);
 
-            if (!file.exists() || isFirstRun(context)) {
+            if (!file.exists()) {
 
                 InputStream ins = context.getAssets().open(fileName);
                 FileOutputStream fos = new FileOutputStream(file);
@@ -212,10 +217,11 @@ public class BottleDetector {
                 fos.close();
                 input.close();
 
-                Log.d("createFile", "Create " + filePath);
+                LogToFile.log("createFile", "Create " + filePath);
             }
         } catch (Exception e) {
             e.printStackTrace();
+            LogToFile.log("createFile", e.getMessage());
         }
     }
 
@@ -239,6 +245,7 @@ public class BottleDetector {
             platform = (String) getMethod.invoke(classType, new Object[]{"ro.board.platform"});
         } catch (Exception e) {
             e.printStackTrace();
+            LogToFile.log("getPlatform", e.getMessage());
         }
         return platform;
     }
@@ -249,6 +256,7 @@ public class BottleDetector {
                     Processor.CHANNELS, fileDirPath + "/" + mYoloModelName);
         } catch (Exception e) {
             e.printStackTrace();
+            LogToFile.log("initializeObjectDetectionModel", e.getMessage());
         }
     }
 
@@ -259,6 +267,7 @@ public class BottleDetector {
                     Processor.CHANNELS, fileDirPath + "/" + mClassifierModelName);
         }catch (Exception e){
             e.printStackTrace();
+            LogToFile.log("initializeClassificationModel", e.getMessage());
         }
     }
 
@@ -280,16 +289,16 @@ public class BottleDetector {
     }
 
     private static String hexToBase8(String hexString) {
-        String binaryString = "";
-        String octalString = "";
+        StringBuilder binaryString = new StringBuilder();
+        StringBuilder octalString = new StringBuilder();
 
         // Convert the hexadecimal string to binary string
         for (int i = 0; i < hexString.length(); i++) {
-            String binary = Integer.toBinaryString(Character.digit(hexString.charAt(i), 16));
+            StringBuilder binary = new StringBuilder(Integer.toBinaryString(Character.digit(hexString.charAt(i), 16)));
             while (binary.length() < 4) {
-                binary = "0" + binary;
+                binary.insert(0, "0");
             }
-            binaryString += binary;
+            binaryString.append(binary);
         }
 
         // Convert the binary string to octal string
@@ -297,30 +306,30 @@ public class BottleDetector {
         int padding = length % 3;
         if (padding > 0) {
             for (int i = 0; i < 3 - padding; i++) {
-                binaryString = "0" + binaryString;
+                binaryString.insert(0, "0");
             }
         }
         length = binaryString.length();
         for (int i = 0; i < length; i += 3) {
             String triplet = binaryString.substring(i, i + 3);
             int octal = Integer.parseInt(triplet, 2);
-            octalString += Integer.toString(octal);
+            octalString.append(Integer.toString(octal));
         }
 
-        return octalString;
+        return octalString.toString();
     }
 
     private static String base8ToHex(String octalString) {
-        String binaryString = "";
-        String hexString = "";
+        StringBuilder binaryString = new StringBuilder();
+        StringBuilder hexString = new StringBuilder();
 
         // Convert the octal string to binary string
         for (int i = 0; i < octalString.length(); i++) {
-            String binary = Integer.toBinaryString(Character.digit(octalString.charAt(i), 8));
+            StringBuilder binary = new StringBuilder(Integer.toBinaryString(Character.digit(octalString.charAt(i), 8)));
             while (binary.length() < 3) {
-                binary = "0" + binary;
+                binary.insert(0, "0");
             }
-            binaryString += binary;
+            binaryString.append(binary);
         }
 
         // Convert the binary string to hexadecimal string
@@ -328,32 +337,33 @@ public class BottleDetector {
         int padding = length % 4;
         if (padding > 0) {
             for (int i = 0; i < 4 - padding; i++) {
-                binaryString = "0" + binaryString;
+                binaryString.insert(0, "0");
             }
         }
         length = binaryString.length();
         for (int i = 0; i < length; i += 4) {
             String quadruplet = binaryString.substring(i, i + 4);
             int decimal = Integer.parseInt(quadruplet, 2);
-            hexString += Integer.toHexString(decimal);
+            hexString.append(Integer.toHexString(decimal));
         }
 
         if (hexString.charAt(0) == '0') return hexString.substring(1);
-        return hexString;
+        return hexString.toString();
     }
 
     private static boolean validateActivationCode(String validation){
-        if (validation.length() == 0) return false;
+        if (validation.isEmpty()) return false;
         try{
             String[] decoded = new String(decrypt(hexStringToByteArray(validation), pw, em), StandardCharsets.UTF_8).split(" ");
-            System.out.println("validateActivationCode: " + Arrays.toString(decoded));
-            String output = "";
+            LogToFile.log("BD","validateActivationCode: " + Arrays.toString(decoded));
+            StringBuilder output = new StringBuilder();
             for (int i = 0; i < jargon.length()/2; i += 1) {
-                output += jargon.charAt(jargon.length() - 1 - i) + "" + jargon.charAt(i);
+                output.append(jargon.charAt(jargon.length() - 1 - i)).append(jargon.charAt(i));
             }
-            return device.equals(decoded[0]) && output.equals(base8ToHex(decoded[1]));
+            return device.equals(decoded[0]) && output.toString().equals(base8ToHex(decoded[1]));
         }catch(Exception e){
             e.printStackTrace();
+            LogToFile.log("validateActivationCode", e.getMessage());
         }
         return false;
     }

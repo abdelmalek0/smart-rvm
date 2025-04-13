@@ -12,6 +12,7 @@ import com.smartprints_ksa.battery_detector.data_structure.enums.Direction;
 import com.smartprints_ksa.battery_detector.data_structure.enums.ObjectType;
 import com.smartprints_ksa.battery_detector.data_structure.enums.Phase;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -117,27 +118,8 @@ public class Session {
             currentSnapshot.setPhase(this.getCurrentOperation().getPhase());
             currentSnapshot.setDetectionDuration(BottleDetector.getPipelineExecutionTime());
 
-            List<Map.Entry<ObjectType, Double>> results = Embeddings.semanticSearch(currentSnapshot.getEmbedding());
-            currentSnapshot.setObjectType(results.get(0).getKey());
-
-//            if (this.getCurrentOperation().getPhase() == Phase.DETECTION) {
-//                switch (Utils.argmax(currentSnapshot.getScore())){
-//                    case 0:
-//                        currentSnapshot.setObjectType(ObjectType.BOTTLE);
-//                        break;
-//                    case 1:
-//                        currentSnapshot.setObjectType(ObjectType.CAN);
-//                        break;
-//                    case 2:
-//                        currentSnapshot.setObjectType(ObjectType.NOT_VALID);
-//                        break;
-//                    default:
-//                        currentSnapshot.setObjectType(ObjectType.UNKNOWN);
-//                        break;
-//                }
-//
-//            }
-
+            List<Map.Entry<AbstractMap.SimpleEntry<ObjectType, String>, Double>> results = Embeddings.semanticSearch(currentSnapshot.getEmbedding());
+            currentSnapshot.setObjectType(results.get(0).getValue() > .4f ? ObjectType.UNKNOWN : results.get(0).getKey().getKey());
             this.getCurrentOperation().addSnapshot(currentSnapshot);
 
             return currentSnapshot;

@@ -7,7 +7,9 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -19,21 +21,21 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,19 +48,25 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.smartprints_ksa.battery_detector.LogToFile;
 import com.smartprints_ksa.battery_detector.RVMDetector;
 import com.smartprints_ksa.battery_detector.data_structure.Snapshot;
 import com.smartprints_ksa.battery_detector.data_structure.enums.ObjectType;
 import com.smartprints_ksa.bottle.demo.R;
 
+import java.io.File;
 import java.io.FileDescriptor;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 public class TestActivity extends AppCompatActivity
         implements ActivityCompat.OnRequestPermissionsResultCallback, Runnable {
@@ -213,14 +221,35 @@ public class TestActivity extends AppCompatActivity
         classDropdown.setAdapter(adapter);
         classDropdown.setSelection(Arrays.asList(classNames).indexOf(currentSnapshot.getObjectType().name()));
 
-
         builder.setPositiveButton("Save", (dialog, which) -> {
             String selectedClass = classDropdown.getSelectedItem().toString();
 
             if (!selectedClass.isEmpty()) {
+                String embeddingId = String.valueOf(System.currentTimeMillis());
                 currentSnapshot.setObjectType(ObjectType.valueOf(selectedClass));
-                RVMDetector.addEmbeddings(currentSnapshot.getObjectType(), Collections.singletonList(currentSnapshot.getEmbedding()));
-                drawBboxes(snapshots);
+
+                RVMDetector.addEmbedding(currentSnapshot.getObjectType(), embeddingId, currentSnapshot.getEmbedding());
+
+                // Show ProgressDialog
+                ProgressDialog progressDialog = new ProgressDialog(this);
+                progressDialog.setMessage("Saving data...");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+
+                new Thread(() -> {
+                    // Save embedding to JSON file
+                    saveEmbeddingToJson(getApplicationContext(), currentSnapshot.getObjectType(), embeddingId, currentSnapshot.getEmbedding());
+
+                    // Save bitmap to internal storage
+                    saveBitmapToStorage(getApplicationContext(), currentSnapshot.getObjectBitmap(), embeddingId);
+
+                    // Hide ProgressDialog on UI thread
+                    runOnUiThread(() -> {
+                        progressDialog.dismiss(); // Dismiss progress dialog
+                        drawBboxes(snapshots);
+                    });
+                }).start();
+
             } else {
                 Toast.makeText(this, "Please select a class", Toast.LENGTH_SHORT).show();
                 showClassPickerDialog(currentSnapshot); // Re-show the dialog if no selection
@@ -233,6 +262,114 @@ public class TestActivity extends AppCompatActivity
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+    }
+
+
+    public static void saveEmbeddingToJson(Context context, ObjectType objectType, String embeddingId, float[] embedding) {
+        try {
+            // Define the file path for data.json
+            File dir = context.getExternalFilesDir(null);
+            if (!dir.exists()) {
+                dir.mkdirs(); // Create the directory if it doesn't exist
+            }
+
+            File file = new File(dir, "data.json");
+
+            // Create a Gson instance
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            JsonObject rootObject;
+
+            // Load existing JSON file if it exists, otherwise create a new object
+            if (file.exists()) {
+                FileReader fileReader = new FileReader(file);
+                rootObject = JsonParser.parseReader(fileReader).getAsJsonObject();
+                fileReader.close();
+            } else {
+                rootObject = new JsonObject();
+            }
+
+            // Get or create the "embeddings" object
+            JsonObject embeddingsObject = rootObject.has("embeddings") ?
+                    rootObject.getAsJsonObject("embeddings") :
+                    new JsonObject();
+
+            // Get or create the array for the specific object type
+            JsonArray classEmbeddingsArray = embeddingsObject.has(objectType.name()) ?
+                    embeddingsObject.getAsJsonArray(objectType.name()) :
+                    new JsonArray();
+
+            // Remove existing entry with the same embeddingId (to update it)
+            for (int i = 0; i < classEmbeddingsArray.size(); i++) {
+                JsonObject obj = classEmbeddingsArray.get(i).getAsJsonObject();
+                if (obj.get("id").getAsString().equals(embeddingId)) {
+                    classEmbeddingsArray.remove(i);
+                    break;
+                }
+            }
+
+            // Create a new embedding object
+            JsonObject embeddingObject = new JsonObject();
+            embeddingObject.addProperty("id", embeddingId);
+
+            // Convert float array to JsonArray
+            JsonArray embeddingArray = new JsonArray();
+            for (float value : embedding) {
+                embeddingArray.add(value);
+            }
+            embeddingObject.add("embedding", embeddingArray);
+
+            // Add the new embedding
+            classEmbeddingsArray.add(embeddingObject);
+            embeddingsObject.add(objectType.name(), classEmbeddingsArray);
+            rootObject.add("embeddings", embeddingsObject);
+
+            // Write back to data.json
+            FileWriter fileWriter = new FileWriter(file);
+            gson.toJson(rootObject, fileWriter);
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            LogToFile.log("saveEmbeddingToJson", e.getMessage());
+        }
+    }
+
+
+    private void saveBitmapToStorage(Context context, Bitmap bitmap, String embeddingId) {
+        try {
+            File appDirectory = context.getExternalFilesDir(null);
+            if (appDirectory == null) {
+                Toast.makeText(context, "External storage unavailable", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Create images subdirectory
+            File imagesDirectory = new File(appDirectory, "images");
+            if (!imagesDirectory.exists()) {
+                imagesDirectory.mkdirs();
+            }
+
+            // Create file with embedding ID as name inside images directory
+            File file = new File(imagesDirectory, embeddingId + ".jpg");
+            FileOutputStream fos = new FileOutputStream(file);
+
+            // Compress and save the bitmap
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+
+            // Make the file visible in gallery
+            MediaScannerConnection.scanFile(
+                    this,
+                    new String[]{file.getAbsolutePath()},
+                    new String[]{"image/jpeg"},
+                    null
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+            LogToFile.log("saveBitmapToStorage", e.getMessage());
+            Toast.makeText(this, "Failed to save image", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void checkPermissions() {
@@ -251,7 +388,7 @@ public class TestActivity extends AppCompatActivity
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Log.d("yolo", "onRequestPermissionsResult:" + requestCode);
+        LogToFile.log("yolo", "onRequestPermissionsResult:" + requestCode);
         if (requestCode == 321) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 Toast toast = Toast.makeText(this, "Please turn on the permission " +
@@ -286,6 +423,7 @@ public class TestActivity extends AppCompatActivity
             return image;
         } catch (IOException e) {
             e.printStackTrace();
+            LogToFile.log("uriToBitmap", e.getMessage());
         }
         return null;
     }
@@ -323,6 +461,8 @@ public class TestActivity extends AppCompatActivity
                 batteryObject.setRect(rescaleBBox(batteryObject.getRect(), mStartX, mStartY, mIvScaleX, mIvScaleY));
 
                 System.out.println(batteryObject.getRect().top + " " + batteryObject.getRect().bottom + " " + batteryObject.getRect().left
+                        + " " + batteryObject.getRect().right);
+                LogToFile.log("Detection: ", batteryObject.getRect().top + " " + batteryObject.getRect().bottom + " " + batteryObject.getRect().left
                         + " " + batteryObject.getRect().right);
                 total_time += (int) (batteryObject.getDetectionDuration() / 1_000_000.0);
             }

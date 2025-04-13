@@ -11,6 +11,7 @@ import com.smartprints_ksa.battery_detector.data_structure.Snapshot;
 import com.smartprints_ksa.battery_detector.data_structure.enums.ObjectType;
 import com.smartprints_ksa.battery_detector.data_structure.enums.Phase;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -106,18 +107,20 @@ public class RVMDetector {
 
 //            Log.d("Scores", Arrays.toString(currentSnapshot.g()));
             long startTime = System.nanoTime();
-            List<Map.Entry<ObjectType, Double>> results = Embeddings.semanticSearch(currentSnapshot.getEmbedding());
+            List<Map.Entry<AbstractMap.SimpleEntry<ObjectType, String>, Double>> results = Embeddings.semanticSearch(currentSnapshot.getEmbedding());
             long endTime = System.nanoTime(); // End time
             long duration = endTime - startTime; // Calculate execution time in nanoseconds
-            System.out.println("Results: " + 
-            "1: " + results.get(0).getKey().toString() + "~~~" + results.get(0).getValue().toString() +
-            "2: " + results.get(1).getKey().toString() + "~~~" + results.get(1).getValue().toString() +
-            "3: " + results.get(2).getKey().toString() + "~~~" + results.get(2).getValue().toString()
-            );
 	        System.out.println("1. Execution time: " + duration / 1_000_000.0 + " ms");
             System.out.println("2. Execution time: " + BottleDetector.getPipelineExecutionTime() / 1_000_000.0 + " ms");
             currentSnapshot.setDetectionDuration(BottleDetector.getPipelineExecutionTime() + duration);
-            currentSnapshot.setObjectType(results.get(0).getValue() > 1.0 ? ObjectType.UNKNOWN : results.get(0).getKey());
+
+            for (Map.Entry<AbstractMap.SimpleEntry<ObjectType, String>, Double> result : results) {
+                ObjectType type = result.getKey().getKey();
+                String id = result.getKey().getValue();
+                double distance = result.getValue();
+                System.out.printf("Type: %s, ID: %s, Distance: %f%n", type, id, distance);
+            }
+            currentSnapshot.setObjectType(results.get(0).getValue() > 1.0 ? ObjectType.UNKNOWN : results.get(0).getKey().getKey());
             return currentSnapshot;
         }
         return null;
@@ -125,22 +128,28 @@ public class RVMDetector {
 
     public static ArrayList<Snapshot> detectAll(Bitmap bitmap){
         ArrayList<DetectedObject> detectedObjects = BottleDetector.recognize(bitmap);
-        ArrayList<Snapshot> snapshots = new ArrayList<Snapshot>();
+
+        float confidence = .45f;
+        ArrayList<Snapshot> snapshots = new ArrayList<>();
         for (DetectedObject detectedObject: detectedObjects){
             Snapshot currentSnapshot = new Snapshot(detectedObject, bitmap);
             long startTime = System.nanoTime();
-            List<Map.Entry<ObjectType, Double>> results = Embeddings.semanticSearch(currentSnapshot.getEmbedding());
+            List<Map.Entry<AbstractMap.SimpleEntry<ObjectType, String>, Double>> results = Embeddings.semanticSearch(currentSnapshot.getEmbedding());
             long endTime = System.nanoTime(); // End time
             long duration = endTime - startTime; // Calculate execution time in nanoseconds
-            System.out.println("Results: " +
-                    "1: " + results.get(0).getKey().toString() + "~~~" + results.get(0).getValue().toString() +
-                    "2: " + results.get(1).getKey().toString() + "~~~" + results.get(1).getValue().toString() +
-                    "3: " + results.get(2).getKey().toString() + "~~~" + results.get(2).getValue().toString()
-            );
             System.out.println("1. Execution time: " + duration / 1_000_000.0 + " ms");
             System.out.println("2. Execution time: " + BottleDetector.getPipelineExecutionTime() / 1_000_000.0 + " ms");
             currentSnapshot.setDetectionDuration(BottleDetector.getPipelineExecutionTime() / detectedObjects.size() + duration);
-            currentSnapshot.setObjectType(results.get(0).getValue() > 1.0 ? ObjectType.UNKNOWN : results.get(0).getKey());
+            ObjectType class_ = ObjectType.UNKNOWN;
+            for (Map.Entry<AbstractMap.SimpleEntry<ObjectType, String>, Double> result : results.subList(0,3)) {
+                ObjectType type = result.getKey().getKey();
+                String id = result.getKey().getValue();
+                double distance = result.getValue();
+                if (class_ == ObjectType.UNKNOWN && type != ObjectType.UNKNOWN && distance < confidence)
+                    class_ = type;
+                System.out.printf("Type: %s, ID: %s, Distance: %f%n", type, id, distance);
+            }
+            currentSnapshot.setObjectType(results.get(0).getValue() > confidence ? ObjectType.UNKNOWN : class_);
 
             snapshots.add(currentSnapshot);
         }
@@ -172,8 +181,16 @@ public class RVMDetector {
     }
 
 
-    public static void addEmbeddings(ObjectType type, List<float[]> embeddings) {
-        Embeddings.addEmbedding(type, embeddings);
+    public static void addEmbeddings(ObjectType type, Map<String, float[]> embeddings) {
+        Embeddings.addEmbeddings(type, embeddings);
+    }
+
+    public static void addEmbedding(ObjectType type, String id ,float[] embedding) {
+        Embeddings.addEmbedding(type, id, embedding);
+    }
+
+    public static void clearEmbeddings(){
+        Embeddings.clearEmbeddings();
     }
 
 }

@@ -29,6 +29,7 @@ public class Snapshot extends DetectedObject {
     public Snapshot(DetectedObject object, Bitmap bitmap){
         super(object.getId(), object.getDetectionConfidence(), new RectF(object.getRect()));
         super.setEmbedding(object.getEmbedding());
+        super.setObjectBitmap(object.getObjectBitmap());
         this.bitmap = Bitmap.createBitmap(bitmap);
         this.currentDate = new Date();
     }

@@ -14,7 +14,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ImageFormat;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
@@ -29,15 +28,14 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Size;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.smartprints_ksa.battery_detector.LogToFile;
 import com.smartprints_ksa.bottle.demo.R;
 
 import java.io.ByteArrayOutputStream;
@@ -333,7 +331,7 @@ public class CropActivity extends AppCompatActivity{
     // Convert Captured Image from ImageReader to Bitmap
     public static Bitmap convertYuvToBitmap(Image image) {
         if (image == null) {
-            Log.e("TAG", "Image is null");
+            LogToFile.log("TAG", "Image is null");
             return null;
         }
 
